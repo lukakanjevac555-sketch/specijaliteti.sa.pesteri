@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Specijaliteti sa Peštera</title>
+    <style>
+        :root {
+            --primary-color: #2c5e3b;
+            --secondary-color: #d4a373;
+            --bg-color: #fdfbf7;
+            --text-color: #333333;
+        }
+
+        * { box-sizing: border-box; }
+
+        html { -webkit-text-size-adjust: 100%; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin-left: 20px;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+
+        nav a:hover {
+            color: var(--secondary-color);
+        }
+
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: 0;
+            color: white;
+            font-size: 1.8rem;
+            line-height: 1;
+            padding: 0.25rem 0.5rem;
+            cursor: pointer;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: auto;
+            padding: 2rem;
+        }
+
+        /* Sekcije */
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        /* Početna */
+        .hero {
+            text-align: center;
+            padding: 4rem 1rem;
+            background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('https://images.unsplash.com/photo-1500595046743-cd271d694d30?auto=format&fit=crop&w=1200&q=80') no-repeat center center/cover;
+            color: white;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+        }
+
+        .hero h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .btn {
+            display: inline-block;
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: background 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background-color: #bc8a5f;
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+            padding: 0.5rem 1.1rem;
+        }
+
+        .btn-outline:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        /* Katalog – filteri */
+        .filters {
+            display: flex;
+            gap: 0.5rem;
+            overflow-x: auto;
+            padding: 0.25rem 0 0.75rem;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .chip {
+            flex: 0 0 auto;
+            border: 2px solid var(--primary-color);
+            background: white;
+            color: var(--primary-color);
+            padding: 0.45rem 1rem;
+            border-radius: 999px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            font-family: inherit;
+            cursor: pointer;
+        }
+
+        .chip.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        /* Katalog – kategorije */
+        .category {
+            margin-bottom: 2.5rem;
+        }
+
+        .category.hidden {
+            display: none;
+        }
+
+        .category h3.category-title {
+            color: var(--primary-color);
+            border-bottom: 3px solid var(--secondary-color);
+            padding-bottom: 0.4rem;
+            margin: 1.5rem 0 1.5rem;
+            font-size: 1.5rem;
+        }
+
+        /* Katalog – kartice */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .card {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            transition: transform 0.3s;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            display: block;
+            background: #eee;
+        }
+
+        .card-content {
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+
+        .card-content h3 {
+            margin-top: 0;
+            color: var(--primary-color);
+        }
+
+        /* na kartici se opis skraćuje, a u detaljima se vidi ceo */
+        .card-content p {
+            margin-top: 0;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .more {
+            color: #b0572d;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin: 0 0 0.75rem;
+        }
+
+        .price {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: #b0572d;
+            margin-bottom: 1rem;
+            margin-top: auto;
+        }
+
+        .card .btn {
+            align-self: flex-start;
+        }
+
+        /* Detalj proizvoda */
+        .back-btn {
+            margin-bottom: 1.25rem;
+        }
+
+        .product-detail {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            overflow: hidden;
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+        }
+
+        .product-detail .photo {
+            background: #f1ece4;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: zoom-in;
+        }
+
+        .product-detail .photo img {
+            width: 100%;
+            height: 100%;
+            max-height: 75vh;
+            object-fit: contain;
+            display: block;
+        }
+
+        .product-detail .info {
+            padding: 2rem;
+        }
+
+        .product-detail .tag {
+            display: inline-block;
+            background: var(--secondary-color);
+            color: white;
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 0.15rem 0.75rem;
+            border-radius: 999px;
+            margin-bottom: 0.75rem;
+        }
+
+        .product-detail h2 {
+            margin: 0 0 0.75rem;
+            color: var(--primary-color);
+        }
+
+        .product-detail .info p {
+            font-size: 1.05rem;
+        }
+
+        .product-detail .price {
+            font-size: 1.5rem;
+            margin: 1rem 0;
+        }
+
+        /* Uvećana slika preko celog ekrana */
+        .lightbox {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.92);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            padding: 1rem;
+            cursor: zoom-out;
+        }
+
+        .lightbox.open {
+            display: flex;
+        }
+
+        .lightbox img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .lightbox .close {
+            position: absolute;
+            top: 0.75rem;
+            right: 1rem;
+            color: white;
+            font-size: 2.2rem;
+            line-height: 1;
+        }
+
+        /* Kontakt */
+        .contact-info {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .order-note {
+            display: none;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        footer {
+            text-align: center;
+            padding: 1.5rem;
+            background-color: #222;
+            color: white;
+            margin-top: 3rem;
+        }
+
+        /* ---------- Mobilni prikaz ---------- */
+        @media (max-width: 720px) {
+            header {
+                flex-wrap: wrap;
+                padding: 0.75rem 1rem;
+            }
+
+            header h1 {
+                font-size: 1.15rem;
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+
+            nav {
+                display: none;
+                width: 100%;
+                flex-direction: column;
+                margin-top: 0.5rem;
+                border-top: 1px solid rgba(255,255,255,0.25);
+            }
+
+            nav.open {
+                display: flex;
+            }
+
+            nav a {
+                margin: 0;
+                padding: 0.85rem 0.25rem;
+                border-bottom: 1px solid rgba(255,255,255,0.12);
+            }
+
+            .container {
+                padding: 1rem;
+            }
+
+            .hero {
+                padding: 2.5rem 1rem;
+            }
+
+            .hero h2 {
+                font-size: 1.6rem;
+            }
+
+            .category h3.category-title {
+                font-size: 1.3rem;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+                gap: 1.25rem;
+            }
+
+            .card img {
+                height: 220px;
+            }
+
+            .card-content {
+                padding: 1.1rem 1.25rem 1.25rem;
+            }
+
+            .btn {
+                width: 100%;
+                text-align: center;
+                padding: 0.85rem 1rem;
+            }
+
+            .card .btn {
+                align-self: stretch;
+            }
+
+            .product-detail {
+                grid-template-columns: 1fr;
+            }
+
+            .product-detail .photo img {
+                max-height: 60vh;
+            }
+
+            .product-detail .info {
+                padding: 1.25rem;
+            }
+
+            .back-btn {
+                width: auto;
+            }
+
+            .contact-info {
+                padding: 1.25rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Specijaliteti sa Peštera</h1>
+        <button class="menu-toggle" id="menuToggle" aria-label="Meni">&#9776;</button>
+        <nav id="mainNav">
+            <a href="#home">Početna</a>
+            <a href="#catalog">Katalog</a>
+            <a href="#contact">Kontakt</a>
+        </nav>
+    </header>
+
+    <div class="container">
+
+        <!-- POČETNA STRANICA -->
+        <div id="home" class="section active">
+            <div class="hero">
+                <h2>Tradicionalni ukusi sa Pešterske visoravni</h2>
+                <p>100% prirodni domaći proizvodi direktno sa našeg gazdinstva do Vašeg stola.</p>
+                <a class="btn" href="#catalog">Pogledaj ponudu</a>
+            </div>
+            <h3>O našim proizvodima</h3>
+            <p>Naši proizvodi nastaju u netaknutoj prirodi Peštera, po tradicionalnim recepturama. Nudimo vrhunski sjenički sir, kajmak, suhomesnate delicije i druge domaće specijalitete pripremljene s ljubavlju i pažnjom.</p>
+        </div>
+
+        <!-- KATALOG -->
+        <div id="catalog" class="section">
+            <h2>Katalog proizvoda</h2>
+
+            <div class="filters" id="filters">
+                <button class="chip active" data-filter="all">Svi proizvodi</button>
+                <button class="chip" data-filter="mlecni">Mlečni proizvodi</button>
+                <button class="chip" data-filter="suhomesnati">Suhomesnati proizvodi</button>
+                <button class="chip" data-filter="ostalo">Ostalo</button>
+            </div>
+
+            <!-- MLEČNI PROIZVODI -->
+            <div class="category" data-cat="mlecni" data-title="Mlečni proizvodi">
+                <h3 class="category-title">Mlečni proizvodi</h3>
+                <div class="grid">
+
+                    <div class="card" data-id="sjenicki-sir">
+                        <img src="slike/WhatsApp Image 2026-09-21 at 17.09.08.jpeg" alt="Domaći sjenički sir" loading="lazy">
+                        <div class="card-content">
+                            <h3>Domaći sjenički sir</h3>
+                            <p>Pravi domaći punomasni kravlji/ovčiji sir sa Peštera. Zreo u kaci, blago slanog i kremastog ukusa, savršen uz topao hleb, kao deo meze ili uz doručak.</p>
+                            <div class="more">Pogledaj detalje &rarr;</div>
+                            <div class="price">1.200 RSD / kg</div>
+                            <button class="btn">Naruči</button>
+                        </div>
+                    </div>
+
+                    <div class="card" data-id="sir-iz-kace">
+                        <img src="slike/sir.iz.kace.jpeg" alt="Sir iz kace" loading="lazy">
+                        <div class="card-content">
+                            <h3>Sir iz kace</h3>
+                            <p>Domaći punomasni sir iz kace, zreo na tradicionalan način po staroj pešterskoj recepturi. Pun, izražen ukus i mekana tekstura čine ga pravim domaćim specijalitetom.</p>
+                            <div class="more">Pogledaj detalje &rarr;</div>
+                            <div class="price">1.200 RSD / kg</div>
+                            <button class="btn">Naruči</button>
+                        </div>
+                    </div>
+
+                    <div class="card" data-id="sjenicki-kajmak">
+                        <img src="slike/kajmak.jpeg" alt="Sjenički kajmak" loading="lazy">
+                        <div class="card-content">
+                            <h3>Sjenički kajmak</h3>
+                            <p>Starinski zreli kajmak bogatog i prepoznatljivog ukusa. Kremast, masan i aromatičan, idealan uz pogaču, hleb, roštilj ili kao dodatak tradicionalnim jelima.</p>
+                            <div class="more">Pogledaj detalje &rarr;</div>
+                            <div class="price">2.000 RSD / kg</div>
+                            <button class="btn">Naruči</button>
+                        </div>
+                    </div>
+
+                    <div class="card" data-id="mladi-kajmak">
+                        <img src="slike/mladi.kajmak.jpeg" alt="Mladi kajmak" loading="lazy">
+                        <div class="card-content">
+                            <h3>Mladi kajmak</h3>
+                            <p>Mladi kajmak nežne i meke teksture i blagog, mlečnog ukusa. Pripremljen na tradicionalan način od domaćeg mleka, lagan je i savršen za doručak, uz hleb ili pogaču.</p>
+                            <div class="more">Pogledaj detalje &rarr;</div>
+                            <div class="price">1.700 RSD / kg</div>
+                            <button class="btn">Naruči</button>
+                        </div>
+                    </div>
+
+                    <div class="card" data-id="mladi-sir">
+                        <img src="slike/mladi.sir.jpeg" alt="Mladi punomasni sir" loading="lazy">
+                        <div class="card-content">
+                            <h3>Mladi punomasni sir</h3>
+                            <p>Svež, mlad punomasni sir blagog ukusa i mekane teksture. Pravi se od domaćeg mleka i odličan je za doručak, salate, pite i pogače.</p>
+                            <div class="more">Pogledaj detalje &rarr;</div>
+                            <div class="price">1.000 RSD / kg</div>
+                            <button class="btn">Naruči</button>
+                        </div>
+                    </div>
+
+                    <div class="card" data-id="paprika-u-pavlaci">
+                        <img src="slike/paprika.jpeg" alt="Paprika u pavlaci" loading="lazy">
+                        <div class="card-content">
+                            <h3>Paprika u pavlaci</h3>
+                            <p>Domaća paprika u pavlaci, pripremljena po tradicionalnom receptu. Kremastog i blago ljutog ukusa, odlična kao prilog uz roštilj i meso ili kao namaz uz hleb.</p>
+                            <div class="more">Pogledaj detalje &rarr;</div>
+                            <div class="price">1.000 RSD / kg</div>
+                            <button class="btn">Naruči</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SUHOMESNATI PROIZVODI -->
+            <div class="category" data-cat="suhomesnati" data-title="Suhomesnati proizvodi">
+                <h3 class="category-title">Suhomesnati proizvodi</h3>
+                <div class="grid">
+
+                    <div class="card" data-id="svinjska-pecenica">
+                        <img src="slike/WhatsApp Image 2026-09-21 at 17.29.58.jpeg" alt="Svinjska pečenica" loading="lazy">
+                        <div class="card-content">
+                            <h3>Svinjska pečenica</h3>
+                            <p>Vrhunska suva svinjska pečenica sa Peštera, sušena na planinskom vazduhu i prirodnom dimu, prepoznatljiva po izuzetnoj mekoći i bogatom, tradicionalnom ukusu.</p>
+                            <div class="more">Pogledaj detalje &rarr;</div>
+                            <div class="price">1.700 RSD / kg</div>
+                            <button class="btn">Naruči</button>
+                        </div>
+                    </div>
+
+                    <div class="card" data-id="govedja-prsuta">
+                        <img src="slike/govedja.jpeg" alt="Goveđa pršuta" loading="lazy">
+                        <div class="card-content">
+                            <h3>Goveđa pršuta</h3>
+                            <p>Sušena na tradicionalan pešterski način na bukovom drvetu. Nežna, aromatična i bogatog ukusa, najlepša je isečena na tanke listiće uz sir, masline i dobar hleb.</p>
+                            <div class="more">Pogledaj detalje &rarr;</div>
+                            <div class="price">3.400 RSD / kg</div>
+                            <button class="btn">Naruči</button>
+                        </div>
+                    </div>
+
+                    <div class="card" data-id="suva-slanina">
+                        <img src="slike/WhatsApp Image 2026-09-21 at 17.01.35.jpeg" alt="Suva slanina" loading="lazy">
+                        <div class="card-content">
+                            <h3>Suva slanina</h3>
+                            <p>Domaća suva slanina sa Peštera, dimljena i sušena na planinskom vazduhu. Prepoznatljivog dimljenog ukusa, odlična uz hleb i luk, u jelima od pasulja i kupusa ili kao deo meze.</p>
+                            <div class="more">Pogledaj detalje &rarr;</div>
+                            <div class="price">1.700 RSD / kg</div>
+                            <button class="btn">Naruči</button>
+                        </div>
+                    </div>
+
+                    <div class="card" data-id="govedji-sudzuk">
+                        <img src="slike/sudzuk.jpeg" alt="Goveđi sudžuk" loading="lazy">
+                        <div class="card-content">
+                            <h3>Goveđi sudžuk</h3>
+                            <p>Domaći goveđi sudžuk, začinjen po tradicionalnoj recepturi i sušen na planinskom vazduhu. Pikantnog i izražajnog ukusa, odličan za meze, uz sir ili pečen na tiganju sa jajima.</p>
+                            <div class="more">Pogledaj detalje &rarr;</div>
+                            <div class="price">1.800 RSD / kg</div>
+                            <button class="btn">Naruči</button>
+                        </div>
+                    </div>
+
+                    <div class="card" data-id="spic-rebra">
+                        <img src="slike/rebra.jpeg" alt="Špic rebra" loading="lazy">
+                        <div class="card-content">
+                            <h3>Špic rebra</h3>
+                            <p>Suva dimljena svinjska špic rebra sa Peštera, sušena na prirodnom dimu. Mesnata i aromatična, idealna za kuvanje u pasulju i čorbama ili za pečenje na roštilju.</p>
+                            <div class="more">Pogledaj detalje &rarr;</div>
+                            <div class="price">1.300 RSD / kg</div>
+                            <button class="btn">Naruči</button>
+                        </div>
+                    </div>
+
+                    <div class="card" data-id="kulen">
+                        <img src="slike/kulen.jpeg" alt="Kulen" loading="lazy">
+                        <div class="card-content">
+                            <h3>Kulen</h3>
+                            <p>Domaći suvi kulen od odabranog svinjskog mesa, začinjen paprikom i sušen polako i prirodno. Pun, blago ljut ukus i čvrsta tekstura čine ga pravom delicijom na svakoj trpezi.</p>
+                            <div class="more">Pogledaj detalje &rarr;</div>
+                            <div class="price">1.700 RSD / kg</div>
+                            <button class="btn">Naruči</button>
+                        </div>
+                    </div>
+
+                    <div class="card" data-id="njeguski-prsut">
+                        <img src="slike/njeguski.jpeg" alt="Njeguški pršut" loading="lazy">
+                        <div class="card-content">
+                            <h3>Njeguški pršut</h3>
+                            <p>Suvi pršut od svinjskog buta, osoljen, dimljen i dugo sušen na planinskom vazduhu. Izražene arome, mekan i slatkastog ukusa, najlepši je isečen na tanke listove uz sir i masline.</p>
+                            <div class="more">Pogledaj detalje &rarr;</div>
+                            <div class="price">2.900 RSD / kg</div>
+                            <button class="btn">Naruči</button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- OSTALO -->
+            <div class="category" data-cat="ostalo" data-title="Ostalo">
+                <h3 class="category-title">Ostalo</h3>
+                <div class="grid">
+
+                    <div class="card" data-id="cvarci">
+                        <img src="slike/cvarci.jpeg" alt="Čvarci" loading="lazy">
+                        <div class="card-content">
+                            <h3>Čvarci</h3>
+                            <p>Domaći hrskavi čvarci, pripremljeni po starinskom receptu sa Peštera. Neizostavni uz svež hleb, pogaču ili domaću rakiju, pravi ukus tradicionalne seoske trpeze.</p>
+                            <div class="more">Pogledaj detalje &rarr;</div>
+                            <div class="price">1.700 RSD / kg</div>
+                            <button class="btn">Naruči</button>
+                        </div>
+                    </div>
+
+                    <div class="card" data-id="duvan-cvarci">
+                        <img src="slike/duvan.cvarci.jpeg" alt="Duvan čvarci" loading="lazy">
+                        <div class="card-content">
+                            <h3>Duvan čvarci</h3>
+                            <p>Domaći duvan čvarci, pripremljeni po starom receptu i dobro začinjeni. Mekani i ukusni, odlični uz hleb i crni luk, kao dodatak pogačama ili kao deo domaće meze.</p>
+                            <div class="more">Pogledaj detalje &rarr;</div>
+                            <div class="price">2.000 RSD / kg</div>
+                            <button class="btn">Naruči</button>
+                        </div>
+                    </div>
+
+                    <div class="card" data-id="rostiljska-kobasica">
+                        <img src="slike/rostiljska.jpeg" alt="Roštiljska kobasica" loading="lazy">
+                        <div class="card-content">
+                            <h3>Roštiljska kobasica</h3>
+                            <p>Domaća roštiljska kobasica od odabranog mesa, pikantno začinjena. Sočna je i aromatična, a najlepša kada se ispeče na žaru uz svež hleb, kajmak i salatu.</p>
+                            <div class="more">Pogledaj detalje &rarr;</div>
+                            <div class="price">1.200 RSD / kg</div>
+                            <button class="btn">Naruči</button>
+                        </div>
+                    </div>
+
+                    
+
+                    <div class="card" data-id="livadski-med">
+                        <img src="slike/med.jpeg" alt="Livadski med" loading="lazy">
+                        <div class="card-content">
+                            <h3>Livadski med</h3>
+                            <p>Prirodni livadski med sa pešterskih livada, pun mirisa planinskog cveća i trava. Idealan za doručak, uz čaj, u poslasticama i kao prirodni zaslađivač.</p>
+                            <div class="more">Pogledaj detalje &rarr;</div>
+                            <div class="price">2.000 RSD / kg</div>
+                            <button class="btn">Naruči</button>
+                        </div>
+                    </div>
+
+                    <div class="card" data-id="juneci-pazarski-cevapi">
+                        <img src="slike/cevapi.jpeg" alt="Juneći pazarski ćevapi" loading="lazy">
+                        <div class="card-content">
+                            <h3>Juneći pazarski ćevapi</h3>
+                            <p>Pazarski ćevapi od mladog junećeg mesa, pripremljeni po tradicionalnoj recepturi. Sočni i mekani, najlepši su sa roštilja, uz svež hleb, luk i kajmak.</p>
+                            <div class="more">Pogledaj detalje &rarr;</div>
+                            <div class="price">1.200 RSD / kg</div>
+                            <button class="btn">Naruči</button>
+                        </div>
+                    </div>
+
+                    <div class="card" data-id="ketering">
+                        <img src="slike/ketering.jpeg" alt="Ketering" loading="lazy">
+                        <div class="card-content">
+                            <h3>Ketering</h3>
+                            <p>Pripremamo plate sira, suhomesnatih proizvoda i drugih domaćih specijaliteta za proslave, slave, rođendane i poslovna okupljanja. Ponudu i cenu dogovaramo prema broju gostiju i Vašim željama.</p>
+                            <div class="more">Pogledaj detalje &rarr;</div>
+                            <div class="price">Po dogovoru</div>
+                            <button class="btn">Naruči</button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+        <!-- DETALJ PROIZVODA -->
+        <div id="product" class="section">
+            <button class="btn btn-outline back-btn" id="backBtn">&larr; Nazad na katalog</button>
+            <div class="product-detail" id="productDetail"></div>
+        </div>
+
+        <!-- KONTAKT -->
+        <div id="contact" class="section">
+            <h2>Kontakt i naručivanje</h2>
+            <div class="contact-info">
+                <p class="order-note" id="orderNote"></p>
+                <p>Za sve narudžbine i dodatne informacije, možete nas kontaktirati direktno:</p>
+                <ul>
+                    <li><strong>Telefon / Viber / WhatsApp:</strong> +381 63 770 3924</li>
+                    <li><strong>Instagram / TikTok:</strong> @specijaliteti.sa.pestera</li>
+                    <li><strong>Dostava:</strong> Lična dostava u Beogradu, a za ostale gradove slanje brzom poštom / kurirskom službom.</li>
+                </ul>
+                <p>Pošaljite nam poruku sa proizvodima koje želite, količinom i adresom za dostavu!</p>
+            </div>
+        </div>
+
+    </div>
+
+    <footer>
+        <p>&copy; 2026 Specijaliteti sa Peštera. Sva prava zadržana.</p>
+    </footer>
+
+    <div class="lightbox" id="lightbox">
+        <span class="close">&times;</span>
+        <img id="lightboxImg" src="" alt="">
+    </div>
+
+    <script>
+        let pendingOrder = '';
+        let lastCatalogScroll = 0;
+
+        const lightbox = document.getElementById('lightbox');
+        const nav = document.getElementById('mainNav');
+
+        function showSection(sectionId) {
+            document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+        }
+
+        /* ---- Filter kategorija u katalogu ---- */
+        document.getElementById('filters').addEventListener('click', e => {
+            const chip = e.target.closest('.chip');
+            if (!chip) return;
+            const f = chip.dataset.filter;
+            document.querySelectorAll('.chip').forEach(c => c.classList.toggle('active', c === chip));
+            document.querySelectorAll('.category').forEach(c => {
+                c.classList.toggle('hidden', f !== 'all' && c.dataset.cat !== f);
+            });
+        });
+
+        /* ---- Klik na karticu ili na dugme "Naruči" ---- */
+        document.getElementById('catalog').addEventListener('click', e => {
+            const card = e.target.closest('.card');
+            if (!card) return;
+            if (e.target.closest('.btn')) {
+                pendingOrder = card.querySelector('h3').textContent;
+                location.hash = 'contact';
+            } else {
+                location.hash = 'product-' + card.dataset.id;
+            }
+        });
+
+        /* ---- Stranica proizvoda (gradi se iz kartice) ---- */
+        function showProduct(id) {
+            const card = document.querySelector('.card[data-id="' + id + '"]');
+            if (!card) { location.hash = 'catalog'; return; }
+
+            const img = card.querySelector('img');
+            const name = card.querySelector('h3').textContent;
+            const desc = card.querySelector('p').textContent;
+            const price = card.querySelector('.price').textContent;
+            const cat = card.closest('.category').dataset.title;
+
+            const detail = document.getElementById('productDetail');
+            detail.innerHTML =
+                '<div class="photo" id="photoBox"><img alt=""></div>' +
+                '<div class="info">' +
+                    '<span class="tag"></span>' +
+                    '<h2></h2>' +
+                    '<p></p>' +
+                    '<div class="price"></div>' +
+                    '<button class="btn" id="orderBtn">Naruči</button>' +
+                '</div>';
+
+            const photo = detail.querySelector('.photo img');
+            photo.src = img.getAttribute('src');
+            photo.alt = name;
+            detail.querySelector('.tag').textContent = cat;
+            detail.querySelector('h2').textContent = name;
+            detail.querySelector('.info p').textContent = desc;
+            detail.querySelector('.price').textContent = price;
+
+            document.getElementById('photoBox').addEventListener('click', () => {
+                document.getElementById('lightboxImg').src = photo.src;
+                document.getElementById('lightboxImg').alt = name;
+                lightbox.classList.add('open');
+            });
+
+            document.getElementById('orderBtn').addEventListener('click', () => {
+                pendingOrder = name;
+                location.hash = 'contact';
+            });
+        }
+
+        document.getElementById('backBtn').addEventListener('click', () => {
+            location.hash = 'catalog';
+        });
+
+        lightbox.addEventListener('click', () => lightbox.classList.remove('open'));
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape') lightbox.classList.remove('open');
+        });
+
+        /* ---- Navigacija (preko # pa radi i dugme "nazad" na telefonu) ---- */
+        function route() {
+            const hash = location.hash.replace('#', '') || 'home';
+            lightbox.classList.remove('open');
+            nav.classList.remove('open');
+
+            if (hash.startsWith('product-')) {
+                showProduct(hash.slice('product-'.length));
+                showSection('product');
+                window.scrollTo(0, 0);
+                return;
+            }
+
+            if (!document.getElementById(hash)) {
+                showSection('home');
+                return;
+            }
+
+            showSection(hash);
+
+            const note = document.getElementById('orderNote');
+            if (hash === 'contact' && pendingOrder) {
+                note.style.display = 'block';
+                note.textContent = 'Želite da naručite: ' + pendingOrder;
+            } else {
+                note.style.display = 'none';
+            }
+
+            window.scrollTo(0, hash === 'catalog' ? lastCatalogScroll : 0);
+        }
+
+        // pamti gde je korisnik stao u katalogu
+        window.addEventListener('scroll', () => {
+            if (document.getElementById('catalog').classList.contains('active')) {
+                lastCatalogScroll = window.scrollY;
+            }
+        }, { passive: true });
+
+        window.addEventListener('hashchange', route);
+
+        document.getElementById('menuToggle').addEventListener('click', () => {
+            nav.classList.toggle('open');
+        });
+
+        route();
+    </script>
+
+</body>
+</html>
